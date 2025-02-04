@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摇杆控制小球</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+        #area {
+            width: 80vw;
+            height: 80vh;
+            background-color: #b27d44;
+            border: 4px solid #bfb391;
+            position: absolute;
+            border-radius: 25px;
+        }
+        #oii {
+            margin: 0;
+            padding: 0;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 8px solid rgb(140, 222, 188);
+            border-left: 8px solid rgba(159, 194, 107, 0);
+            border-right: 8px solid rgba(255, 0, 0, 0);
+            border-top: 8px solid rgba(0, 0, 0, 0);
+            transform: rotate(180deg);
+            background-color: #9fedd851;
+            position: relative;
+            top: -12.5px;
+            left: -12.5px;
+        }
+        #oi {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: rgba(80, 192, 130, 0.529);
+            top: 20%;
+            left: 50%;
+            position: relative;
+            
+        }
+
+        #ball {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(56, 235, 190, 0.529);
+            top: 50%;
+            border-radius: 50%;
+            border: 10px solid rgba(255, 0, 0, 0);
+            border-top: 10px solid rgba(128, 247, 219, 0.852);
+            box-shadow: inset="border-top" 2px 2px 2px 2px red;
+            position: absolute;
+            display: none;
+        }
+        .ball2 {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(113, 136, 131, 0.837);
+            border-radius: 50%;
+            margin: 0;
+            padding: 0;
+            top: 20px;
+            left: 20px;
+            position: relative;
+        }
+
+        #ball3 {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(128, 247, 219, 0.837);
+            border-radius: 50%;
+            margin: 0;
+            padding: 0;
+            position: relative;
+           
+        }
+
+        /* 坐标轴样式 */
+        #x-axis {
+            position: absolute;
+            bottom: 50%; /* X 轴在中间 */
+            left: 0;
+            width: 100%;
+            height: 2px; /* X 轴的高度 */
+            background-color: red; /* X 轴颜色 */
+            z-index: 1; /* 确保在其他元素之上 */
+        }
+
+        #y-axis {
+            position: absolute;
+            left: 50%; /* Y 轴在中间 */
+            top: 0;
+            width: 2px; /* Y 轴的宽度 */
+            height: 100%;
+            background-color: blue; /* Y 轴颜色 */
+            z-index: 1; /* 确保在其他元素之上 */
+        }
+    </style>
+</head>
+<body>
+    <div id="area">
+        <div id="oi"><div id="oii"></div></div>
+        <div id="ball"><div class="ball2"><div id="ball3"></div></div></div>
+        
+        
+    </div>
+   
+    <script>
+        const ball = document.getElementById('ball');
+        const ball3 = document.getElementById('ball3');
+        const area = document.getElementById('area');
+        const areaRect = area.getBoundingClientRect(); // 获取 #area 的位置
+        const areaCenterX = areaRect.left + areaRect.width / 2; // 计算 X 轴中心
+        const areaCenterY = areaRect.top + areaRect.height / 2; // 计算 Y 轴中心
+
+        let inmove = false;
+        let movedX, movedY;
+        let isDragging3 = false;
+        let offsetX3, offsetY3;
+
+        area.addEventListener('contextmenu', (e) => {
+            e.preventDefault(); // 阻止默认的上下文菜单
+            console.log('长按菜单已取消');
+        });
+
+        area.addEventListener('touchstart', (e) => {
+            console.log('触摸开始');
+            inmove = true;
+
+            const touch = e.touches[0];
+            const abX = touch.clientX - areaCenterX; // 计算相对于原点的 X 坐标
+            const abY = touch.clientY - areaCenterY; // 计算相对于原点的 Y 坐标
+
+            const ball3Rect = ball3.getBoundingClientRect();
+            movedX = touch.clientX - ball3Rect.left;
+            movedY = touch.clientY - ball3Rect.top;
+
+            const ballX = abX + areaRect.width / 2 - 52.4;
+            const ballY = abY + areaRect.height / 2 - 52.4;
+            ball.style.left = `${ballX}px`;
+            ball.style.top = `${ballY}px`;
+
+            offsetX3 = touch.clientX - ball3Rect.left;
+            offsetY3 = touch.clientY - ball3Rect.top;
+
+            ball3.style.left = `${touch.clientX - offsetX3}px`;
+            ball3.style.top = `${touch.clientY - offsetY3}px`;
+            ball.style.display = 'block';
+            isDragging3 = true;
+        });
+
+        area.addEventListener('touchmove', (event) => {
+            if (!inmove) return;
+
+            const touch = event.touches[0];
+            const abX = touch.clientX - areaCenterX; // 计算相对于原点的 X 坐标
+            const abY = touch.clientY - areaCenterY; // 计算相对于原点的 Y 坐标
+            let newX = touch.clientX - offsetX3;
+            let newY = touch.clientY - offsetY3;
+
+            let newx = touch.clientX - movedX;
+            let newy = touch.clientY - movedY;
+
+            const ballBounds = ball.getBoundingClientRect();
+            const ball3Bounds = ball3.getBoundingClientRect();
+
+            if (newx > 45) {
+                newX = 45;
+            }
+            if (newx < -45) {
+                newX = -45;
+            }
+            if (newy > 45) {
+                newY = 45;
+            }
+            if (newy < -45) {
+                newY = -45;
+            }
+            if (Math.sqrt(newx * newx + newy * newy) > 45) {
+                newX = 45 * Math.cos(Math.atan2(newY, newX));
+                newY = 45 * Math.sin(Math.atan2(newY, newX));
+            }
+
+            if (isDragging3) {
+                ball3.style.left = `${newX}px`;
+                ball3.style.top = `${newY}px`;
+            }
+        });
+
+        area.addEventListener('touchend', () => {
+            inmove = false;
+            isDragging3 = false;
+            ball.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

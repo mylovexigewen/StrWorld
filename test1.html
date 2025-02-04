@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轮播图示例</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .carousel {
+            position: relative;
+            width: 600px; /* 轮播图宽度 */
+            overflow: hidden;
+        }
+
+        .carousel-images {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-images img {
+            width: 600px; /* 图片宽度 */
+            height: auto; /* 自适应高度 */
+        }
+
+        .carousel-controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .indicator {
+            width: 15px;
+            height: 15px;
+            background-color: #857c7c9a;
+            border-radius: 50%;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .indicator.active {
+            background-color: #dedede;
+        }
+
+        #buttonLeft {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #857c7c9a;
+            border: none;
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            width: 35px;
+            height: 80px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        #buttonRight {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            background-color: #857c7c9a;
+            border: none;
+            cursor: pointer;
+            width: 35px;
+            height: 80px;
+            border-radius: 10px 0 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="carousel">
+        <div class="carousel-images" id="carouselImages1">
+            <img src="./imgs/666976b24747a35738e5790c0825d77.jpg" alt="Image 1">
+            <img src="./imgs/b0c0d5396f7f396b1565576a8c694a9.jpg" alt="Image 2">
+            <img src="./imgs/logo.png" alt="Image 3">
+        </div>
+
+        <div class="carousel-controls">
+            <button id="buttonLeft">左</button>
+            <button id="buttonRight">右</button>
+        </div>
+        <div class="carousel-indicators">
+            <div class="indicator" id="carouselDown1"></div>
+            <div class="indicator" id="carouselDown2"></div>
+            <div class="indicator" id="carouselDown3"></div>
+        </div>
+    </div>
+    <script>
+        const buttonLeft = document.getElementById('buttonLeft');
+        const buttonRight = document.getElementById('buttonRight');
+        const carouselImages1 = document.getElementById('carouselImages1');
+        const indicators = document.querySelectorAll('.indicator');
+
+        let currentIndex = 0;
+
+        function updateCarousel() {
+            carouselImages1.style.transform = `translateX(-${currentIndex * 100}%)`;
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        buttonRight.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % carouselImages1.children.length;
+            updateCarousel();
+        });
+
+        buttonLeft.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + carouselImages1.children.length) % carouselImages1.children.length;
+            updateCarousel();
+        });
+
+        // 自动播放
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % carouselImages1.children.length;
+            updateCarousel();
+        }, 5000); // 每5秒切换一次
+    </script>
+</body>
+</html>
